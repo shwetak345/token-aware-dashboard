@@ -61,7 +61,7 @@ export function SprintSummary({ stats }: Props) {
         <StatCard
           label="Context Debt"
           value={`${stats.contextDebtPct}%`}
-          sub="of budget consumed"
+          sub="of commits with anomaly signals"
           icon={<Activity className="h-5 w-5 text-rose-600" />}
           accent="bg-rose-50"
         />
