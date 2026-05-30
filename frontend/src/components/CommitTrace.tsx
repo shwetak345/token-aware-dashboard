@@ -200,7 +200,7 @@ function GroupHeaderRow({ group, isExpanded, onToggle, hasSeparator }: GroupHead
 
 // ── child commit row ──────────────────────────────────────────────────────────
 
-function CommitRow({ commit }: { commit: Commit }) {
+function CommitRow({ commit, isBaseline }: { commit: Commit; isBaseline?: boolean }) {
   const eff = commit.efficiencyScore ?? Math.max(0, 1 - commit.debtScore / 100);
   return (
     <tr
@@ -237,16 +237,22 @@ function CommitRow({ commit }: { commit: Commit }) {
       </td>
 
       {/* Δ Tokens */}
-      <td
-        className={`py-3 pr-4 text-right tabular-nums ${
-          commit.deltaTokens > 0
-            ? 'text-rose-600'
-            : commit.deltaTokens < 0
-              ? 'text-emerald-600'
-              : 'text-slate-400'
-        }`}
-      >
-        {fmtDelta(commit.deltaTokens)}
+      <td className="py-3 pr-4 text-right tabular-nums">
+        {isBaseline ? (
+          <span className="text-slate-300">—</span>
+        ) : (
+          <span
+            className={
+              commit.deltaTokens > 0
+                ? 'text-rose-600'
+                : commit.deltaTokens < 0
+                  ? 'text-emerald-600'
+                  : 'text-slate-400'
+            }
+          >
+            {fmtDelta(commit.deltaTokens)}
+          </span>
+        )}
       </td>
 
       {/* Efficiency pill */}
@@ -325,7 +331,13 @@ export function CommitTrace({ commits }: Props) {
                   hasSeparator={groupIdx > 0}
                 />
                 {expanded.has(group.jiraId) &&
-                  group.commits.map((c) => <CommitRow key={c.sha} commit={c} />)}
+                  group.commits.map((c, idx) => (
+                    <CommitRow
+                      key={c.sha}
+                      commit={c}
+                      isBaseline={idx === group.commits.length - 1}
+                    />
+                  ))}
               </Fragment>
             ))}
           </tbody>
